@@ -4,6 +4,7 @@ import json
 
 class Menu():
     db_file = 'file.json'
+    attempts_number = 5
 
     menu = ('Добро пожаловать в программу "Моя бухгалтерия"\n\n'
             'Доступные действия:\n'
