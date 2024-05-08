@@ -22,11 +22,16 @@ class Action:
             amount_income = 0
             amount_consumption = 0
             for item in self.data:
-                for key, value in item.items():
-                    print(key, value)
-
+                # for key, value in item.items():
+                #     print(item.get('Сумма'))
+                if item.get('Категория') == 'Доход':
+                    amount_income += item.get('Сумма')
+                elif item.get('Категория') == 'Расход':
+                    amount_consumption += item.get('Сумма')
+                else:
+                    continue
                     # if key == "Доход":
-                    #     print(key)
+                    #     print(item.get('Сумма'))
                     #     amount_income += item.get('Сумма')
                     #     break
                     # elif key == "Расход":
