@@ -12,4 +12,5 @@ def parse_from_json(db_file):
 
 
 def parse_to_json(data):
-    pass
+    with open('file.json', 'w', encoding='utf-8') as db_file:
+        json.dump(data, db_file, ensure_ascii=False, indent=4)
