@@ -1,4 +1,6 @@
 import datetime
+from pprint import pprint
+
 from parse import parse_to_json
 
 
@@ -8,6 +10,12 @@ description_incom = ['Зарплата', 'Инвестиции',
 
 description_consumption = ['Продукты', 'Дом', 'Кафе', 'Авто',
                            'Налоги', 'Транспорт', 'Хозтовары', 'Спорт']
+
+
+def save_note(data):
+    answer = input('Сохранить запись? 1 - да, 0 - нет\n')
+    if answer == '1':
+        parse_to_json(data)
 
 
 class Action:
@@ -30,18 +38,7 @@ class Action:
                     amount_consumption += item.get('Сумма')
                 else:
                     continue
-                    # if key == "Доход":
-                    #     print(item.get('Сумма'))
-                    #     amount_income += item.get('Сумма')
-                    #     break
-                    # elif key == "Расход":
-                    #     print(key)
-                    #     amount_consumption += item.get('Сумма')
-                    #     break
-                    # else:
-                    #     continue
-
-            return f'Доход - {amount_income}\nРасход - {amount_consumption}\nБаланс - {amount_income - amount_consumption}'
+        return f'Доход - {amount_income}\nРасход - {amount_consumption}\nБаланс - {amount_income - amount_consumption}'
 
     @property
     def add_operation(self):
@@ -85,7 +82,7 @@ class Action:
                               'Категория': 'Доход',
                               'Сумма': amount,
                               'Описание': description_incom[description-1],
-                              'Дата': datetime.datetime.now().strftime('%d-%m-%Y %H:%M')})
+                              'Дата': datetime.datetime.now().strftime('%d-%m-%Y')})
         else:
             for number, desc in enumerate(description_consumption, 1):
                 print(f'{number} -> {desc}')
@@ -101,11 +98,173 @@ class Action:
                               'Категория': 'Расход',
                               'Сумма': amount,
                               'Описание': description_consumption[description-1],
-                              'Дата': datetime.datetime.now().strftime('%d-%m-%Y %H:%M')})
+                              'Дата': datetime.datetime.now().strftime('%d-%m-%Y')})
 
-        save_note = input(
-            'Сохранить запись? 1 - да, 0 - нет\n')
-        if save_note == '1':
-            parse_to_json(self.data)
+        save_note(self.data)
+        return 'Запись добавлена'
 
-        return self.data
+    @property
+    def edit_operation(self):
+        edit_note = input('Введите ID записи для редактирования\n')
+        while True:
+            for item in self.data:
+                if item.get('ID') == int(edit_note):
+                    print('Выберите поле для редактирования\n')
+                    print('1 - Категория\n'
+                          '2 - Сумма\n'
+                          '3 - Описание\n'
+                          '4 - Дата\n'
+                          '0 - Выход\n')
+                    while True:
+                        try:
+                            field = int(input('>'))
+                            if field < 0 or field > 4:
+                                raise ValueError
+                            break
+                        except ValueError:
+                            print('Некорректное значение')
+                    if field == 1:
+                        print('Выберите категорию')
+                        print('Прежнее значение: ', item.get('Категория'))
+                        for number, cat in enumerate(categories, 1):
+                            print(f'{number} -> {cat}')
+                        while True:
+                            try:
+                                category = int(input('>'))
+                                if category < 1 or category > 2:
+                                    raise ValueError
+                                break
+                            except ValueError:
+                                print('Некорректное значение')
+                        item['Категория'] = categories[category-1]
+                    elif field == 2:
+                        print('Введите сумму')
+                        print('Прежнее значение: ', item.get('Сумма'))
+                        while True:
+                            try:
+                                amount = int(input('>'))
+                                break
+                            except ValueError:
+                                print('Некорректное значение')
+                        item['Сумма'] = amount
+                    elif field == 3:
+                        print('Выберите описание')
+                        print('Прежнее значение: ', item.get('Описание'))
+                        if item.get('Категория') == 'Доход':
+                            for number, desc in enumerate(description_incom, 1):
+                                print(f'{number} -> {desc}')
+                            while True:
+                                try:
+                                    description = int(input('>'))
+                                    if 1 > description >= len(description_incom):
+                                        raise ValueError
+                                    break
+                                except ValueError:
+                                    print('Некорректное значение')
+                            item['Описание'] = description_incom[description-1]
+                        else:
+                            for number, desc in enumerate(description_consumption, 1):
+                                print(f'{number} -> {desc}')
+                            while True:
+                                try:
+                                    description = int(input('>'))
+                                    if 1 > description >= len(description_consumption):
+                                        raise ValueError
+                                    break
+                                except ValueError:
+                                    print('Некорректное значение')
+                            item['Описание'] = description_consumption[description-1]
+                    elif field == 4:
+                        print('Введите дату')
+                        print('Прежнее значение: ', item.get('Дата'))
+                        item['Дата'] = input('>')
+                    elif field == 0:
+                        save_note(self.data)
+                        return 'Запись отредактирована'
+
+    @property
+    def find_operation(self):
+        while True:
+            print('Введите номер поля для поиска')
+            print('1 - Категория\n'
+                  '2 - Сумма\n'
+                  '3 - Описание\n'
+                  '4 - Дата\n'
+                  '0 - Выход\n')
+            while True:
+                try:
+                    field = int(input('>'))
+                    if field < 0 or field > 4:
+                        raise ValueError
+                    break
+                except ValueError:
+                    print('Некорректное значение')
+            if field == 1:
+                print('Выберите категорию')
+                for number, cat in enumerate(categories, 1):
+                    print(f'{number} -> {cat}')
+                while True:
+                    try:
+                        category = int(input('>'))
+                        if category < 1 or category > 2:
+                            raise ValueError
+                        break
+                    except ValueError:
+                        print('Некорректное значение')
+                for item in self.data:
+                    if item.get('Категория') == categories[category-1]:
+                        pprint(item)
+            elif field == 2:
+                print('Введите сумму')
+                while True:
+                    try:
+                        amount = int(input('>'))
+                        break
+                    except ValueError:
+                        print('Некорректное значение')
+                for item in self.data:
+                    if item.get('Сумма') == amount:
+                        pprint(item)
+            elif field == 3:
+                print('Выберите описание')
+                if item.get('Категория') == 'Доход':
+                    for number, desc in enumerate(description_incom, 1):
+                        print(f'{number} -> {desc}')
+                    while True:
+                        try:
+                            description = int(input('>'))
+                            if 1 > description >= len(description_incom):
+                                raise ValueError
+                            break
+                        except ValueError:
+                            print('Некорректное значение')
+                    for item in self.data:
+                        if item.get('Описание') == description_incom[description-1]:
+                            pprint(item)
+                else:
+                    for number, desc in enumerate(description_consumption, 1):
+                        print(f'{number} -> {desc}')
+                    while True:
+                        try:
+                            description = int(input('>'))
+                            if 1 > description >= len(description_consumption):
+                                raise ValueError
+                            break
+                        except ValueError:
+                            print('Некорректное значение')
+                    for item in self.data:
+                        if item.get('Описание') == description_consumption[description-1]:
+                            pprint(item)
+            elif field == 4:
+                print('Введите дату')
+                while True:
+                    try:
+                        date = input('>')
+                        break
+                    except ValueError:
+                        print('Некорректное значение')
+                for item in self.data:
+                    if item.get('Дата') == date:
+                        pprint(item)
+            elif field == 0:
+                return 'Поиск завершен'
