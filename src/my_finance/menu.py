@@ -1,9 +1,23 @@
 import os
+import sys
 from actions import Action
 from parse import parse_from_json, parse_to_json
 
 
 class Menu:
+    """Класс Menu используется для отображения и выбора пунктов меню
+
+    Атрибуты
+    -------------
+    data : list
+        список словарей из JSON-файла
+
+    Методы
+    ------------
+    run()
+        запуск меню
+
+    """
 
     def run(self, data=None):
         self.menu = ('"Моя бухгалтерия"\n\n'
@@ -16,7 +30,7 @@ class Menu:
         self.notes = Action(data)
 
         print(self.menu)
-        attempts_number = 5
+        attempts_number = 5  # количество попыток для ошибочного выбора
         while attempts_number > 0:
             answer = int(input('Введите нужный пункт меню: > '))
             if 0 < answer >= 5:
@@ -43,4 +57,7 @@ class Menu:
                         print(self.notes.find_operation)
                         print(self.menu)
                     case 0:
-                        exit()
+                        print('До свидания!')
+                        sys.exit()
+        print('Похоже, вы не знаете, что делаете')
+        sys.exit()

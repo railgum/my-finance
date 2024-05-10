@@ -13,25 +13,53 @@ description_consumption = ['Продукты', 'Дом', 'Кафе', 'Авто',
 
 
 def save_note(data):
+    """Метод сохранения изменений в JSON-файл"""
+
     answer = input('Сохранить запись? 1 - да, 0 - нет\n')
     if answer == '1':
-        parse_to_json(data)
+        parse_to_json(data)  # Внешняя функция записи в JSON
 
 
 class Action:
+    """Класс для осуществления различных действий с содержимым JSON-файла
+
+    Атрибуты
+    ---------
+    data : list
+        список словарей из JSON-файла
+
+    Методы-свойства
+    --------
+    show_balance()
+        проходит по списку словарей и выводит сумму расходов и доходов
+
+    add_operation()
+        добавление операции
+
+    edit_operation()
+        редактирование записи
+
+    find_operation()
+        поиск записей по различным критериям
+
+    """
+
     def __init__(self, data):
         self.data = data
 
     @property
     def show_balance(self):
+        """Свойство, показывающее текущее состояние счета
+
+        Если файл отсутствует, возвращает сообщение
+        """
+
         if not self.data:
             return 'Нет данных'
         else:
             amount_income = 0
             amount_consumption = 0
             for item in self.data:
-                # for key, value in item.items():
-                #     print(item.get('Сумма'))
                 if item.get('Категория') == 'Доход':
                     amount_income += item.get('Сумма')
                 elif item.get('Категория') == 'Расход':
@@ -42,6 +70,14 @@ class Action:
 
     @property
     def add_operation(self):
+        """Свойство добавления операции
+
+        Предлагает выбирать из предложенных списков действий.
+        При неверном выборе вызывается исключение.
+
+        При окончании ввода операции предлагает сохранение записи
+        """
+
         if not self.data:
             id = 1
             self.data = []
@@ -105,6 +141,11 @@ class Action:
 
     @property
     def edit_operation(self):
+        """Свойство редактирования записи
+
+        Редактируемая запись определяется по её ID
+        """
+
         edit_note = input('Введите ID записи для редактирования\n')
         while True:
             for item in self.data:
@@ -184,6 +225,8 @@ class Action:
 
     @property
     def find_operation(self):
+        """Свойство поиска записи по различным критериям"""
+
         while True:
             print('Введите номер поля для поиска')
             print('1 - Категория\n'
