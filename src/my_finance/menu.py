@@ -1,29 +1,63 @@
-from balance import ShowBalance
+import os
+import sys
+from actions import Action
 from parse import parse_from_json, parse_to_json
 
 
-class Menu():
-    db_file = 'file.json'
-    data = parse_from_json(db_file=None)
-    attempts_number = 5
+class Menu:
+    """Класс Menu используется для отображения и выбора пунктов меню
 
-    menu = ('Добро пожаловать в программу "Моя бухгалтерия"\n\n'
-            'Доступные действия:\n'
-            '1 - Баланс\n'
-            '2 - Добавить запись\n'
-            '3 - Редактировать запись\n'
-            '4 - Найти запись\n'
-            '0 - Выход')
-    print(menu)
+    Атрибуты
+    -------------
+    data : list
+        список словарей из JSON-файла
 
-    while attempts_number > 0:
-        answer = input('Введите нужный пункт меню')
-        if (not answer.isdigit) or (0 < answer < 4):
-            print('Некорректный ввод')
-            attempts_number -= 1
-            continue
-        else:
-            match answer:
-                case 1:
-                    balance = ShowBalance(data)
-                    print(balance.show_amount)
+    Методы
+    ------------
+    run()
+        запуск меню
+
+    """
+
+    def run(self, data=None):
+        self.menu = ('"Моя бухгалтерия"\n\n'
+                     'Доступные действия:\n'
+                     '1 - Баланс\n'
+                     '2 - Добавить запись\n'
+                     '3 - Редактировать запись\n'
+                     '4 - Найти запись\n'
+                     '0 - Выход')
+        self.notes = Action(data)
+
+        print(self.menu)
+        attempts_number = 5  # количество попыток для ошибочного выбора
+        while attempts_number > 0:
+            answer = int(input('Введите нужный пункт меню: > '))
+            if 0 < answer >= 5:
+                print('Некорректный ввод')
+                attempts_number -= 1
+                continue
+            else:
+                match answer:
+                    case 1:
+                        os.system('cls||clear')
+                        print(self.notes.show_balance)
+                        print(self.menu)
+                    case 2:
+                        os.system('cls||clear')
+                        print(self.notes.add_operation)
+                        print(self.menu)
+
+                    case 3:
+                        os.system('cls||clear')
+                        print(self.notes.edit_operation)
+                        print(self.menu)
+                    case 4:
+                        os.system('cls||clear')
+                        print(self.notes.find_operation)
+                        print(self.menu)
+                    case 0:
+                        print('До свидания!')
+                        sys.exit()
+        print('Похоже, вы не знаете, что делаете')
+        sys.exit()
